@@ -12,7 +12,7 @@ dic = {}
 
 #open csv file
 filecsv = open('SouqDataapple.csv', 'w',encoding='utf8')
-csv_columns = ['name','price','image','Description for the website','Sales Description','Is published',"Extra Product Media/Name","Extra Product Media/Image"]
+csv_columns = ['name','price','image','Description for the website','Sales Description','Is published',"Extra Product Media/Name","Extra Product Media/Image","Product Attributes/Attribute","Product Attributes/values"]
 writer = csv.DictWriter(filecsv, fieldnames=csv_columns)
 writer.writeheader()
 
@@ -46,21 +46,23 @@ for produit in produits:
     Sales_Description = sop.find('p',{'class':'desc'}).text.strip()
     img = sop.find('div',{'class':'product'}).a.img.get('src')
     Media_ = sop.find('div',{'class':'zoom'}).find_all('a',{'class':'pVignette photo'})
-    
-
-
-
-
-
-
-    #print(img)
-
+    TableTR = sop.find('table',{'id':'product-parameters'}).find_all('tr')
+    TablesRows = []
+    for tr in TableTR:
+      # TablesRows.append(tr.text[1:-1].strip().split('\n'))
+      TablesRows.append(tr.get_text()[1:-1].replace(' ',''))
+    print(TablesRows)
+    break
     # write csv
     del Media_[0]
-    writer.writerow({'name': name, 'price': price, 'image':img,'Description for the website': description,'Sales Description':Sales_Description,'Is published':'True',"Extra Product Media/Name": "test","Extra Product Media/Image":Media_[0].get('href') })
+    Media_Name = Media_[0].get('href').split('/')[-1].split('.')[0]
+    writer.writerow({'name': name, 'price': price, 'image':img,'Description for the website': description,'Sales Description':Sales_Description,'Is published':'True',"Extra Product Media/Name": Media_Name,"Extra Product Media/Image":Media_[0].get('href') ,"Product Attributes/Attribute":"+++","Product Attributes/Attribute,Product Attributes/values":"+++"})
     for imgMedia in Media_:
-       writer.writerow({'name': '', 'price': '', 'image':'','Description for the website': '','Sales Description':'','Is published':'',"Extra Product Media/Name": "test","Extra Product Media/Image":imgMedia.get('href') })
+       Media_Name = imgMedia.get('href').split('/')[-1].split('.')[0]
+       writer.writerow({'name': '', 'price': '', 'image':'','Description for the website': '','Sales Description':'','Is published':'',"Extra Product Media/Name": Media_Name,"Extra Product Media/Image":imgMedia.get('href') })
    
+
+
     #write json
    # dic['name'] = name
    # dic['price'] = price
